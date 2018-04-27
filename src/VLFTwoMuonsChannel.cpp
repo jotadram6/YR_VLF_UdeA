@@ -8,7 +8,30 @@
 
 #include "interface/VLFTwoMuonsChannel.h"
 
+float deltaPhi(float phi1, float phi2) {
+  float PHI = phi1-phi2;
+  if (PHI >= 3.14159265)
+    PHI -= 2*3.14159265;
+  else if (PHI < -3.14159265)
+    PHI += 2*3.14159265;
+ 
+  return PHI;
+}
 
+float MTlnu(float lpt, float metpt, float lphi, float metphi) {
+  return TMath::Sqrt(2*lpt*metpt*(1-TMath::Cos(deltaPhi(metphi,lphi))));
+}
+
+float MTlnumin(float l1pt, float l2pt, float metpt, float l1phi, float l2phi, float metphi) {
+  return TMath::Min(MTlnu(l1pt,metpt,l1phi,metphi),MTlnu(l2pt,metpt,l2phi,metphi));
+}
+
+float MTllmet(float l1pt, float l2pt, float metpt, float l1phi, float l2phi, float metphi) { 
+  //Trying to generalize two body MT https://arxiv.org/pdf/hep-ph/9906349.pdf
+  return TMath::Sqrt(2*l1pt*l2pt*metpt*(1-TMath::Cos(deltaPhi(metphi,deltaPhi(l1phi,l2phi)))));
+}
+
+//Should we consider an extra variable like http://iopscience.iop.org/article/10.1088/1126-6708/2009/11/096/pdf ?????
 
 void VLFTwoMuonsChannel::analyze(size_t childid /* this info can be used for printouts */){
 
@@ -95,8 +118,13 @@ void VLFTwoMuonsChannel::analyze(size_t childid /* this info can be used for pri
 	Double_t muon2Eta=0;
 	Double_t muon1Phi=0;
 	Double_t muon2Phi=0;
-	Double_t MET=0;	
+	Double_t MET=0;
 	Double_t METPhi=0;
+	Double_t MT1=0;
+	Double_t MT2=0;
+	Double_t MTmin=0;
+	Double_t MT12=0;
+	Int_t NJets=0;
 	myskim->Branch("muon1Pt", &muon1Pt);
 	myskim->Branch("muon2Pt", &muon2Pt);
 	myskim->Branch("muon1Eta", &muon1Eta);
@@ -105,12 +133,19 @@ void VLFTwoMuonsChannel::analyze(size_t childid /* this info can be used for pri
 	myskim->Branch("muon2Phi", &muon2Phi);
 	myskim->Branch("MET", &MET);
 	myskim->Branch("METPhi", &METPhi);
+	myskim->Branch("MT1", &MT1);
+	myskim->Branch("MT2", &MT2);
+	myskim->Branch("MTmin", &MTmin);
+	myskim->Branch("MT12", &MT12);
+	myskim->Branch("NJets", &NJets);
 	/*
 	 * Or store a vector of objects (also possible to store only one object)
 	 */
 	//std::vector<Electron> skimmedelecs;
 	//myskim->Branch("Electrons",&skimmedelecs);
-	std::vector<Jet> skimmedjets;
+	//To be included
+	//std::vector<Jet> skimmedjets;
+	//myskim->Branch("Jets",&skimmedjets);
 
 
 
@@ -137,8 +172,8 @@ void VLFTwoMuonsChannel::analyze(size_t childid /* this info can be used for pri
 		/*
 		 * Or to fill the skim
 		 */
-		if (met.at(0)->MET<100) continue;
-		if (jet.at(0)->PT < 100) continue;
+		//if (met.at(0)->MET<100) continue;
+		//if (jet.at(0)->PT < 100) continue;
 		if (muontight.size()<2 || muontight.size()>2) continue;
 		muon1Pt=muontight.at(0)->PT;
 		muon2Pt=muontight.at(1)->PT;
@@ -150,10 +185,20 @@ void VLFTwoMuonsChannel::analyze(size_t childid /* this info can be used for pri
 		MET=met.at(0)->MET;
 		METPhi=met.at(0)->Phi;
 
+		MT1=MTlnu(muon1Pt,MET,muon1Phi,METPhi);
+		MT2=MTlnu(muon2Pt,MET,muon2Phi,METPhi);
+		MTmin=MTlnumin(muon1Pt,muon2Pt,MET,muon1Phi,muon2Phi,METPhi);
+		MT12=MTllmet(muon1Pt,muon2Pt,MET,muon1Phi,muon2Phi,METPhi);
+		
+		Int_t GoodJetCounter=0;
+
 		for (size_t i=0;i<jet.size();i++){
 		  if (jet.at(i)->PT < 30) continue; 
-		  skimmedjets.push_back(*jet.at(i));
+		  //skimmedjets.push_back(*jet.at(i));
+		  GoodJetCounter++;
 		}
+
+		NJets=GoodJetCounter;
 
 		//skimmedelecs.clear();
 		//for(size_t i=0;i<elecs.size();i++){
