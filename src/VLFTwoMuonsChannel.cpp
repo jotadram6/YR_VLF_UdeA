@@ -31,6 +31,11 @@ float MTllmet(float l1pt, float l2pt, float metpt, float l1phi, float l2phi, flo
   return TMath::Sqrt(2*l1pt*l2pt*metpt*(1-TMath::Cos(deltaPhi(metphi,deltaPhi(l1phi,l2phi)))));
 }
 
+/*float SetPxPyPzTFromPtEtaPhiT(float pt, float eta, float phi, float time) {
+  
+  return TMath::Sqrt((((pt*TMath::Cos(phi))*(pt*TMath::Cos(phi)))+((pt*TMath::Sin(phi))*(pt*TMath::Sin(phi)))+((pt*TMath::Sinh(phi))*(pt*TMath::Sinh(phi))))+(mass*mass));
+  }*/
+
 //Should we consider an extra variable like http://iopscience.iop.org/article/10.1088/1126-6708/2009/11/096/pdf ?????
 
 void VLFTwoMuonsChannel::analyze(size_t childid /* this info can be used for printouts */){
@@ -69,11 +74,11 @@ void VLFTwoMuonsChannel::analyze(size_t childid /* this info can be used for pri
 	d_ana::dBranchHandler<HepMCEvent>  event(tree(),"Event");
 	d_ana::dBranchHandler<GenParticle> genpart(tree(),"Particle");
 	d_ana::dBranchHandler<Jet>         genjet(tree(),"GenJet");
-	d_ana::dBranchHandler<Jet>         jet(tree(),"Jet");
+	d_ana::dBranchHandler<Jet>         jet(tree(),"JetPUPPI");
 	d_ana::dBranchHandler<Muon>        muontight(tree(),"MuonTight");
 	d_ana::dBranchHandler<Muon>        muonloose(tree(),"MuonLoose");
 	d_ana::dBranchHandler<Photon>      photon(tree(),"Photon");
-	d_ana::dBranchHandler<MissingET>   met(tree(),"MissingET");
+	d_ana::dBranchHandler<MissingET>   met(tree(),"PuppiMissingET");
 
 
 	/* ==SKIM==
@@ -112,25 +117,18 @@ void VLFTwoMuonsChannel::analyze(size_t childid /* this info can be used for pri
 	 */
 	//Double_t elecPt=0;
 	//myskim->Branch("elecPt", &elecPt);
-	Double_t muon1Pt=0;
-	Double_t muon2Pt=0;
-	Double_t muon1Eta=0;
-	Double_t muon2Eta=0;
-	Double_t muon1Phi=0;
-	Double_t muon2Phi=0;
-	Double_t MET=0;
-	Double_t METPhi=0;
-	Double_t MT1=0;
-	Double_t MT2=0;
-	Double_t MTmin=0;
-	Double_t MT12=0;
-	Int_t NJets=0;
 	myskim->Branch("muon1Pt", &muon1Pt);
 	myskim->Branch("muon2Pt", &muon2Pt);
 	myskim->Branch("muon1Eta", &muon1Eta);
 	myskim->Branch("muon2Eta", &muon2Eta);
 	myskim->Branch("muon1Phi", &muon1Phi);
 	myskim->Branch("muon2Phi", &muon2Phi);
+	myskim->Branch("muon1Charge", &muon1Charge);
+	myskim->Branch("muon2Charge", &muon2Charge);
+	myskim->Branch("TwoMuonSystemMass", &TwoMuonSystemMass);
+	myskim->Branch("TwoMuonSystemPt", &TwoMuonSystemPt);
+	myskim->Branch("TwoMuonSystemEta", &TwoMuonSystemEta);
+	myskim->Branch("TwoMuonSystemPhi", &TwoMuonSystemPhi);
 	myskim->Branch("MET", &MET);
 	myskim->Branch("METPhi", &METPhi);
 	myskim->Branch("MT1", &MT1);
@@ -138,6 +136,19 @@ void VLFTwoMuonsChannel::analyze(size_t childid /* this info can be used for pri
 	myskim->Branch("MTmin", &MTmin);
 	myskim->Branch("MT12", &MT12);
 	myskim->Branch("NJets", &NJets);
+	myskim->Branch("jet1Pt", &jet1Pt);
+	myskim->Branch("jet2Pt", &jet2Pt);
+	myskim->Branch("jet3Pt", &jet3Pt);
+	myskim->Branch("jet1Eta", &jet1Eta);
+	myskim->Branch("jet2Eta", &jet2Eta);
+	myskim->Branch("jet3Eta", &jet3Eta);
+	myskim->Branch("jet1Phi", &jet1Phi);
+	myskim->Branch("jet2Phi", &jet2Phi);
+	myskim->Branch("jet3Phi", &jet3Phi);
+	myskim->Branch("jet1Mass", &jet1Mass);
+	myskim->Branch("jet2Mass", &jet2Mass);
+	myskim->Branch("jet3Mass", &jet3Mass);
+
 	/*
 	 * Or store a vector of objects (also possible to store only one object)
 	 */
@@ -175,12 +186,28 @@ void VLFTwoMuonsChannel::analyze(size_t childid /* this info can be used for pri
 		//if (met.at(0)->MET<100) continue;
 		//if (jet.at(0)->PT < 100) continue;
 		if (muontight.size()<2 || muontight.size()>2) continue;
+		if ((muontight.at(0)->Charge*muontight.at(1)->Charge)>0) continue;
 		muon1Pt=muontight.at(0)->PT;
 		muon2Pt=muontight.at(1)->PT;
 		muon1Eta=muontight.at(0)->Eta;
 		muon2Eta=muontight.at(1)->Eta;
 		muon1Phi=muontight.at(0)->Phi;
 		muon2Phi=muontight.at(1)->Phi;
+		muon1Charge=muontight.at(0)->Charge;
+		muon2Charge=muontight.at(1)->Charge;
+
+		TLorentzVector Muon1;
+		TLorentzVector Muon2;
+		Muon1.SetPtEtaPhiM(muon1Pt,muon1Eta,muon1Phi,mass_mu);
+		Muon2.SetPtEtaPhiM(muon2Pt,muon2Eta,muon2Phi,mass_mu);
+		//Muon1.SetPx(muon1Pt*TMath::Cos(muon1Phi)); Muon1.SetPy(muon1Pt*TMath::Sin(muon1Phi)); Muon1.SetPz(muon1Pt*TMath::SinH(muon1Phi)); Muon1.SetT(muontight.at(0)->T);
+		//Muon2.SetPx(muon2Pt*TMath::Cos(muon2Phi)); Muon2.SetPy(muon2Pt*TMath::Sin(muon2Phi)); Muon2.SetPz(muon2Pt*TMath::SinH(muon2Phi)); Muon2.SetT(muontight.at(1)->T);
+		TLorentzVector TwoMuonSystem=Muon1+Muon2;
+		if (TwoMuonSystem.M()>60 and TwoMuonSystem.M()<120) continue;
+		TwoMuonSystemMass=TwoMuonSystem.M();
+		TwoMuonSystemPt=TwoMuonSystem.Pt();
+		TwoMuonSystemEta=TwoMuonSystem.Eta();
+		TwoMuonSystemPhi=TwoMuonSystem.Phi();
 
 		MET=met.at(0)->MET;
 		METPhi=met.at(0)->Phi;
@@ -191,14 +218,32 @@ void VLFTwoMuonsChannel::analyze(size_t childid /* this info can be used for pri
 		MT12=MTllmet(muon1Pt,muon2Pt,MET,muon1Phi,muon2Phi,METPhi);
 		
 		Int_t GoodJetCounter=0;
+		int CurrentCounter = 0;
+		
+		jet1Pt=0.0; jet1Eta=0.0; jet1Phi=0.0; jet1Mass=0.0;
+		jet2Pt=0.0; jet2Eta=0.0; jet2Phi=0.0; jet2Mass=0.0;
+		jet3Pt=0.0; jet3Eta=0.0; jet3Phi=0.0; jet3Mass=0.0;
 
 		for (size_t i=0;i<jet.size();i++){
 		  if (jet.at(i)->PT < 30) continue; 
 		  //skimmedjets.push_back(*jet.at(i));
 		  GoodJetCounter++;
+		  if (CurrentCounter==0){
+		    CurrentCounter++;
+		    jet1Pt=jet.at(i)->PT; jet1Eta=jet.at(i)->Eta; jet1Phi=jet.at(i)->Phi; jet1Mass=jet.at(i)->Mass; 
+		  }
+		  else if (CurrentCounter==1){
+		    CurrentCounter++;
+		    jet2Pt=jet.at(i)->PT; jet2Eta=jet.at(i)->Eta; jet2Phi=jet.at(i)->Phi; jet2Mass=jet.at(i)->Mass; 
+		  }
+		  else if (CurrentCounter==2){
+		    CurrentCounter++;
+		    jet3Pt=jet.at(i)->PT; jet3Eta=jet.at(i)->Eta; jet3Phi=jet.at(i)->Phi; jet3Mass=jet.at(i)->Mass; 
+		  }
 		}
 
 		NJets=GoodJetCounter;
+		if (NJets<1) continue;
 
 		//skimmedelecs.clear();
 		//for(size_t i=0;i<elecs.size();i++){

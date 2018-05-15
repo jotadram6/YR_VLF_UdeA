@@ -1,0 +1,22 @@
+
+[config-begin]
+
+    Outputdir  = output
+    Outputfile = outputfile.root
+    Lumi       = 3000000
+    
+    Testmode   = false
+
+    Maxchilds  = 100
+    
+    Samplesdir = root://cmseos.fnal.gov//store/user/snowmass/noreplica/LHEGEN_SMbackgrounds/Delphes342pre07_hadd/
+
+[config-end]
+
+
+[inputfiles-begin]
+
+ TT_TuneCUETP8M2T4_14TeV-powheg-pythia8_200PU/, TT, 643, 864.4, auto, 1
+
+[inputfiles-end]
+
