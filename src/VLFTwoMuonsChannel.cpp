@@ -136,6 +136,7 @@ void VLFTwoMuonsChannel::analyze(size_t childid /* this info can be used for pri
 	myskim->Branch("MTmin", &MTmin);
 	myskim->Branch("MT12", &MT12);
 	myskim->Branch("NJets", &NJets);
+	myskim->Branch("NbJets", &NbJets);
 	myskim->Branch("jet1Pt", &jet1Pt);
 	myskim->Branch("jet2Pt", &jet2Pt);
 	myskim->Branch("jet3Pt", &jet3Pt);
@@ -219,6 +220,7 @@ void VLFTwoMuonsChannel::analyze(size_t childid /* this info can be used for pri
 		
 		Int_t GoodJetCounter=0;
 		int CurrentCounter = 0;
+		int bJetCounter = 0;
 		
 		jet1Pt=0.0; jet1Eta=0.0; jet1Phi=0.0; jet1Mass=0.0;
 		jet2Pt=0.0; jet2Eta=0.0; jet2Phi=0.0; jet2Mass=0.0;
@@ -240,7 +242,13 @@ void VLFTwoMuonsChannel::analyze(size_t childid /* this info can be used for pri
 		    CurrentCounter++;
 		    jet3Pt=jet.at(i)->PT; jet3Eta=jet.at(i)->Eta; jet3Phi=jet.at(i)->Phi; jet3Mass=jet.at(i)->Mass; 
 		  }
+		  if (abs(jet.at(i)->Eta) < 2.4 && jet.at(i)->BTag==1){
+		    bJetCounter++;
+		  }
 		}
+
+		NbJets=bJetCounter;
+		if (NbJets!=0) continue;
 
 		NJets=GoodJetCounter;
 		if (NJets<1) continue;

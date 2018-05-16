@@ -44,6 +44,7 @@ private:
 	Double_t MTmin=0;
 	Double_t MT12=0;
 	Int_t NJets=0;
+	Int_t NbJets=0;
 	Double_t jet1Pt=0;
 	Double_t jet2Pt=0;
 	Double_t jet3Pt=0;
