@@ -230,6 +230,9 @@ void VLFTwoMuonsChannel::analyze(size_t childid /* this info can be used for pri
 		  if (jet.at(i)->PT < 30) continue; 
 		  //skimmedjets.push_back(*jet.at(i));
 		  GoodJetCounter++;
+		  if (jet.at(i)->BTag) {
+		    bJetCounter++;
+		  }
 		  if (CurrentCounter==0){
 		    CurrentCounter++;
 		    jet1Pt=jet.at(i)->PT; jet1Eta=jet.at(i)->Eta; jet1Phi=jet.at(i)->Phi; jet1Mass=jet.at(i)->Mass; 
@@ -241,9 +244,6 @@ void VLFTwoMuonsChannel::analyze(size_t childid /* this info can be used for pri
 		  else if (CurrentCounter==2){
 		    CurrentCounter++;
 		    jet3Pt=jet.at(i)->PT; jet3Eta=jet.at(i)->Eta; jet3Phi=jet.at(i)->Phi; jet3Mass=jet.at(i)->Mass; 
-		  }
-		  if (abs(jet.at(i)->Eta) < 2.4 && jet.at(i)->BTag==1){
-		    bJetCounter++;
 		  }
 		}
 

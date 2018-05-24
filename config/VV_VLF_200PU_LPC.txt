@@ -1,0 +1,26 @@
+
+[config-begin]
+
+    Outputdir  = output
+    Outputfile = outputfile.root
+    Lumi       = 3000000
+    
+    Testmode   = false
+
+    Maxchilds  = 100
+    
+    Samplesdir = root://cmseos.fnal.gov//store/user/snowmass/noreplica/DelphesFromLHE_342pre05hadd_2017Aug/
+
+[config-end]
+
+
+[inputfiles-begin]
+
+ BB-4p-0-300-v1510_14TEV_200PU/, BB_0_300, 643, 864.4, auto, 1
+ BB-4p-300-700-v1510_14TEV_200PU/, BB_300_700, 643, 864.4, auto, 2
+ BB-4p-700-1300-v1510_14TEV_200PU/, BB_700_1300, 643, 864.4, auto, 3
+ BB-4p-1300-2100-v1510_14TEV_200PU/, BB_1300_2100, 643, 864.4, auto, 4
+ BB-4p-2100-100000-v1510_14TEV_200PU/, BB_2100_Inf, 643, 864.4, auto, 5
+
+[inputfiles-end]
+
