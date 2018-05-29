@@ -1,0 +1,22 @@
+
+[config-begin]
+
+    Outputdir  = output
+    Outputfile = outputfile.root
+    Lumi       = 3000000
+    
+    Testmode   = false
+
+    Maxchilds  = 100
+    
+    Samplesdir = root://cmseos.fnal.gov//store/user/snowmass/noreplica/LHEGEN_SMbackgrounds/Delphes342pre07_hadd/
+
+[config-end]
+
+
+[inputfiles-begin]
+
+ ST_tch_14TeV_antitop_incl-powheg-pythia8-madspin_200PU/, ST_tch, 730, 93.28, auto, 1
+
+[inputfiles-end]
+
