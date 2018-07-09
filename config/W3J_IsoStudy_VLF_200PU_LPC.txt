@@ -1,0 +1,74 @@
+[config-begin]
+	Outputdir  = set_new_output_directory
+	Outputfile = outputfile.root
+	Lumi = 3e+06
+	Maxchilds = 100
+	Samplesdir = output/
+[config-end]
+
+[inputfiles-begin]
+W3J10_ntuple.root, W3J, 733, 1891, 7999155,1, false 
+W3J61_ntuple.root, W3J, 733, 1891, 7999155,1, false 
+W3J64_ntuple.root, W3J, 733, 1891, 7999155,1, false 
+W3J55_ntuple.root, W3J, 733, 1891, 7999155,1, false 
+W3J37_ntuple.root, W3J, 733, 1891, 7999155,1, false 
+W3J30_ntuple.root, W3J, 733, 1891, 7999155,1, false 
+W3J31_ntuple.root, W3J, 733, 1891, 7999155,1, false 
+W3J16_ntuple.root, W3J, 733, 1891, 7999155,1, false 
+W3J3_ntuple.root, W3J, 733, 1891, 7999155,1, false 
+W3J24_ntuple.root, W3J, 733, 1891, 7999155,1, false 
+DY3J96_ntuple.root, DY3J, 633, 190.2, 11794679,2, false 
+W3J36_ntuple.root, W3J, 733, 1891, 7999155,1, false 
+W3J0_ntuple.root, W3J, 733, 1891, 7999155,1, false 
+W3J63_ntuple.root, W3J, 733, 1891, 7999155,1, false 
+W3J62_ntuple.root, W3J, 733, 1891, 7999155,1, false 
+W3J51_ntuple.root, W3J, 733, 1891, 7999155,1, false 
+W3J22_ntuple.root, W3J, 733, 1891, 7999155,1, false 
+W3J12_ntuple.root, W3J, 733, 1891, 7999155,1, false 
+W3J45_ntuple.root, W3J, 733, 1891, 7999155,1, false 
+W3J57_ntuple.root, W3J, 733, 1891, 7999155,1, false 
+W3J6_ntuple.root, W3J, 733, 1891, 7999155,1, false 
+W3J38_ntuple.root, W3J, 733, 1891, 7999155,1, false 
+W3J20_ntuple.root, W3J, 733, 1891, 7999155,1, false 
+W3J14_ntuple.root, W3J, 733, 1891, 7999155,1, false 
+W3J4_ntuple.root, W3J, 733, 1891, 7999155,1, false 
+W3J41_ntuple.root, W3J, 733, 1891, 7999155,1, false 
+W3J58_ntuple.root, W3J, 733, 1891, 7999155,1, false 
+W3J39_ntuple.root, W3J, 733, 1891, 7999155,1, false 
+W3J54_ntuple.root, W3J, 733, 1891, 7999155,1, false 
+W3J21_ntuple.root, W3J, 733, 1891, 7999155,1, false 
+W3J60_ntuple.root, W3J, 733, 1891, 7999155,1, false 
+W3J13_ntuple.root, W3J, 733, 1891, 7999155,1, false 
+W3J5_ntuple.root, W3J, 733, 1891, 7999155,1, false 
+W3J9_ntuple.root, W3J, 733, 1891, 7999155,1, false 
+W3J15_ntuple.root, W3J, 733, 1891, 7999155,1, false 
+W3J48_ntuple.root, W3J, 733, 1891, 7999155,1, false 
+W3J33_ntuple.root, W3J, 733, 1891, 7999155,1, false 
+W3J19_ntuple.root, W3J, 733, 1891, 7999155,1, false 
+W3J47_ntuple.root, W3J, 733, 1891, 7999155,1, false 
+W3J8_ntuple.root, W3J, 733, 1891, 7999155,1, false 
+W3J28_ntuple.root, W3J, 733, 1891, 7999155,1, false 
+DY3J80_ntuple.root, DY3J, 633, 190.2, 11794679,2, false 
+W3J43_ntuple.root, W3J, 733, 1891, 7999155,1, false 
+W3J35_ntuple.root, W3J, 733, 1891, 7999155,1, false 
+W3J40_ntuple.root, W3J, 733, 1891, 7999155,1, false 
+W3J56_ntuple.root, W3J, 733, 1891, 7999155,1, false 
+W3J7_ntuple.root, W3J, 733, 1891, 7999155,1, false 
+W3J11_ntuple.root, W3J, 733, 1891, 7999155,1, false 
+W3J2_ntuple.root, W3J, 733, 1891, 7999155,1, false 
+W3J49_ntuple.root, W3J, 733, 1891, 7999155,1, false 
+W3J18_ntuple.root, W3J, 733, 1891, 7999155,1, false 
+W3J26_ntuple.root, W3J, 733, 1891, 7999155,1, false 
+W3J17_ntuple.root, W3J, 733, 1891, 7999155,1, false 
+W3J46_ntuple.root, W3J, 733, 1891, 7999155,1, false 
+W3J1_ntuple.root, W3J, 733, 1891, 7999155,1, false 
+W3J59_ntuple.root, W3J, 733, 1891, 7999155,1, false 
+W3J25_ntuple.root, W3J, 733, 1891, 7999155,1, false 
+W3J52_ntuple.root, W3J, 733, 1891, 7999155,1, false 
+W3J32_ntuple.root, W3J, 733, 1891, 7999155,1, false 
+W3J29_ntuple.root, W3J, 733, 1891, 7999155,1, false 
+W3J27_ntuple.root, W3J, 733, 1891, 7999155,1, false 
+W3J50_ntuple.root, W3J, 733, 1891, 7999155,1, false 
+W3J23_ntuple.root, W3J, 733, 1891, 7999155,1, false 
+W3J42_ntuple.root, W3J, 733, 1891, 7999155,1, false 
+[inputfiles-end]

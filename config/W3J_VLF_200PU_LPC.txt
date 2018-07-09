@@ -1,0 +1,22 @@
+
+[config-begin]
+
+    Outputdir  = output
+    Outputfile = outputfile.root
+    Lumi       = 3000000
+    
+    Testmode   = false
+
+    Maxchilds  = 100
+    
+    Samplesdir = root://cmseos.fnal.gov//store/user/snowmass/noreplica/LHEGEN_SMbackgrounds/Delphes342pre07_hadd/
+
+[config-end]
+
+
+[inputfiles-begin]
+
+ WToLNu_3J_14TeV-madgraphMLM-pythia8_200PU/, W3J, 733, 1891, 7999155, 4
+
+[inputfiles-end]
+

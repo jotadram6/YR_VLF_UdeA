@@ -16,10 +16,6 @@
 
 [inputfiles-begin]
 
-$ DYJetsToLL_M-10to50_TuneCUETP8M1_14TeV-madgraphMLM-pythia8_200PU/, DY0J, 630, 3668.0, 661313, 1
-$ DYToLL-M-50_0J_14TeV-madgraphMLM-pythia8_200PU/, DY0J, 630, 3668.0, 19883879, 2
-$ DYToLL-M-50_1J_14TeV-madgraphMLM-pythia8_200PU/, DY1J, 631, 1094.0, 12878206, 3
-$ DYToLL-M-50_2J_14TeV-madgraphMLM-pythia8_200PU/, DY2J, 632, 369.7, 10430290, 4
  DYToLL-M-50_3J_14TeV-madgraphMLM-pythia8_200PU/, DY3J, 633, 190.2, 11794679, 5
 
 [inputfiles-end]

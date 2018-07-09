@@ -1,0 +1,22 @@
+
+[config-begin]
+
+    Outputdir  = output
+    Outputfile = outputfile.root
+    Lumi       = 3000000
+    
+    Testmode   = false
+
+    Maxchilds  = 10
+    
+    Samplesdir = root://cmseos.fnal.gov//store/user/snowmass/noreplica/LHEGEN_SMbackgrounds/Delphes342pre07_hadd/
+
+[config-end]
+
+
+[inputfiles-begin]
+
+ DYToLL-M-50_0J_14TeV-madgraphMLM-pythia8_200PU/, DY0J, 630, 3668.0, 19883879, 2
+
+[inputfiles-end]
+
