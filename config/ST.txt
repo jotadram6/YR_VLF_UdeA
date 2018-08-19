@@ -1,0 +1,26 @@
+
+[config-begin]
+
+    Outputdir  = output
+    Outputfile = outputfile.root
+    Lumi       = 3000000
+    
+    Testmode   = false
+
+    Maxchilds  = 10
+    
+    Samplesdir = root://eoscms.cern.ch//store/group/upgrade/delphes_output/YR_Delphes/
+
+[config-end]
+
+
+[inputfiles-begin]
+
+  Delphes342pre14/ST_tch_14TeV_antitop_incl-powheg-pythia8-madspin_200PU/, ST_tch_14TeV_antitop_incl, 630, 3668.0, 661313, 1
+  Delphes342pre14/ST_tch_14TeV_top_incl-powheg-pythia8-madspin_200PU/, ST_tch_14TeV_top_incl, 630, 3668.0, 661313, 2
+  Delphes342pre15/ST_s-channel_4f_InclusiveDecays_14TeV-amcatnlo-pythia8_200PU/, ST_s-channel, 630, 3668.0, 661313, 3
+  Delphes342pre15/ST_tW_top_5f_inclusiveDecays_14TeV-powheg-pythia8_TuneCUETP8M1_200PU/, ST_tW_top, 630, 3668.0, 661313, 4
+  Delphes342pre15/ST_tW_antitop_5f_inclusiveDecays_14TeV-powheg-pythia8_TuneCUETP8M1_200PU/, ST_tW_antitop, 630, 3668.0, 661313, 5
+
+[inputfiles-end]
+
