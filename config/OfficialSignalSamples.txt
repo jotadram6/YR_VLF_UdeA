@@ -1,0 +1,44 @@
+
+[config-begin]
+
+    Outputdir  = output
+    Outputfile = outputfile.root
+    
+    Lumi       = 3000
+    
+    Testmode   = false
+
+    Maxchilds  = 10
+
+    Samplesdir = root://eoscms.cern.ch//store/group/upgrade/delphes_output/YR_Delphes/Delphes342pre15/
+ 
+    RunOnOutputOnly = false
+
+[config-end]
+
+
+
+[inputfiles-begin]
+
+VLF_MF_100_MS_80_BRmu100_BRtau0_TuneCUETP8M1_14TeV_madgraph_pythia8_200PU/, VLF_MF_100_MS_80_BR_100_0_PU200, 630, 0.815, auto, 1, true
+VLF_MF_100_MS_80_BRmu50_BRtau50_TuneCUETP8M1_14TeV_madgraph_pythia8_200PU/, VLF_MF_100_MS_80_BR_50_50_PU200, 630, 0.815, auto, 2, true
+VLF_MF_100_MS_90_BRmu50_BRtau50_TuneCUETP8M1_14TeV_madgraph_pythia8_200PU/, VLF_MF_100_MS_90_BR_50_50_PU200, 630, 0.815, auto, 3, true
+VLF_MF_100_MS_95_BRmu100_BRtau0_TuneCUETP8M1_14TeV_madgraph_pythia8_200PU/, VLF_MF_100_MS_95_BR_100_0_PU200, 630, 0.815, auto, 4, true
+VLF_MF_150_MS_130_BRmu100_BRtau0_TuneCUETP8M1_14TeV_madgraph_pythia8_200PU/, VLF_MF_150_MS_130_BR_100_0_PU200, 630, 0.815, auto, 5, true
+VLF_MF_150_MS_130_BRmu50_BRtau50_TuneCUETP8M1_14TeV_madgraph_pythia8_200PU/, VLF_MF_150_MS_130_BR_50_50_PU200, 630, 0.815, auto, 6, true
+VLF_MF_150_MS_140_BRmu100_BRtau0_TuneCUETP8M1_14TeV_madgraph_pythia8_200PU/, VLF_MF_150_MS_140_BR_100_0_PU200, 630, 0.815, auto, 7, true
+VLF_MF_150_MS_145_BRmu100_BRtau0_TuneCUETP8M1_14TeV_madgraph_pythia8_200PU/, VLF_MF_150_MS_145_BR_100_0_PU200, 630, 0.815, auto, 8, true
+VLF_MF_150_MS_145_BRmu50_BRtau50_TuneCUETP8M1_14TeV_madgraph_pythia8_200PU/, VLF_MF_150_MS_145_BR_50_50_PU200, 630, 0.815, auto, 9, true
+VLF_MF_200_MS_180_BRmu100_BRtau0_TuneCUETP8M1_14TeV_madgraph_pythia8_200PU/, VLF_MF_200_MS_180_BR_100_0_PU200, 630, 0.815, auto, 10, true
+VLF_MF_200_MS_180_BRmu50_BRtau50_TuneCUETP8M1_14TeV_madgraph_pythia8_200PU/, VLF_MF_200_MS_180_BR_50_50_PU200, 630, 0.815, auto, 11, true
+VLF_MF_200_MS_190_BRmu100_BRtau0_TuneCUETP8M1_14TeV_madgraph_pythia8_200PU/, VLF_MF_200_MS_190_BR_100_0_PU200, 630, 0.815, auto, 12, true
+VLF_MF_200_MS_190_BRmu50_BRtau50_TuneCUETP8M1_14TeV_madgraph_pythia8_200PU/, VLF_MF_200_MS_190_BR_50_50_PU200, 630, 0.815, auto, 13, true
+VLF_MF_200_MS_195_BRmu100_BRtau0_TuneCUETP8M1_14TeV_madgraph_pythia8_200PU/, VLF_MF_200_MS_195_BR_100_0_PU200, 630, 0.815, auto, 14, true
+VLF_MF_200_MS_195_BRmu50_BRtau50_TuneCUETP8M1_14TeV_madgraph_pythia8_200PU/, VLF_MF_200_MS_195_BR_50_50_PU200, 630, 0.815, auto, 15, true
+
+$Waiting for these samples
+$VLF_MF_100_MS_90_BRmu100_BRtau0_TuneCUETP8M1_14TeV_madgraph_pythia8_200PU/, VLF_MF_100_MS_90_BR_100_0_PU200, 630, 0.815, auto, 1, true
+$VLF_MF_100_MS_95_BRmu50_BRtau50_TuneCUETP8M1_14TeV_madgraph_pythia8_200PU/, VLF_MF_100_MS_95_BR_50_50_PU200, 630, 0.815, auto, 1, true
+$VLF_MF_150_MS_140_BRmu50_BRtau50_TuneCUETP8M1_14TeV_madgraph_pythia8_200PU/, VLF_MF_150_MS_140_BR_50_50_PU200, 630, 0.815, auto, 1, true
+
+[inputfiles-end]
