@@ -1,4 +1,9 @@
 from Generic import *
+import CMS_lumi, tdrstyle
+CMS_lumi.cmsText = "CMS"
+CMS_lumi.extraText = "Preliminary"
+CMS_lumi.lumi_13TeV = "3000 fb^{-1}"
+tdrstyle.setTDRStyle()
 
 def YOURcanvas(name="icanvas", size=(800, 600)):
     """Helper method for creating canvas"""
@@ -16,11 +21,13 @@ ROOT.gROOT.ProcessLine("#include <math.h>")
 ROOT.gROOT.Macro("rootphi.C")
 
 
-BasePath="/home/jose/VLF_YR/MergedRootFiles_20180509/"
+BasePath="/home/joser/VLF_YR/MergedRootFiles_20180622/"
 
 #Signal
 
 SigChain=ROOT.TChain("Delphes")
+#SigChain.Add(BasePath+"MF100_MS80_BR_1_0_PU0_part10_ntuple.root")
+#SigChain.Add(BasePath+"MF100_MS80_BR_1_0_PU0_part21_ntuple.root")
 SigChain.Add(BasePath+"signal0_ntuple.root")
 
 #Backgrounds
@@ -107,11 +114,26 @@ print "-------------------------------------------------------------------------
 
 #Cuts
 
+BasicSelection="((NTightMuons==2)&&(muon1Charge*muon2Charge<0)&&((TwoMuonSystemMass<60)||(TwoMuonSystemMass>120)))" #Tight muons
+#BasicSelection="((NTightIso0p4Muons==2)&&(muon1Charge*muon2Charge<0)&&((TwoIso0p4MuonSystemMass<60)||(TwoIso0p4MuonSystemMass>120)))" #Tight Iso 0p4 muons
+#BasicSelection="((mostIsomuon1Charge*mostIsomuon2Charge<0)&&((mostIsoTwoMuonSystemMass<60)||(mostIsoTwoMuonSystemMass>120)))" #Most Iso Tight muons
 TTbarRejection="(NJets<3)"
-FullS=TTbarRejection
+LowPTMuonRejection="((muon1Pt>14)&&(muon2Pt>10)&&(jet1Pt>70))" #Constrained from trigger
+METCut="(MET>60)"
+MuonCleansing="(muon2JetsMuon0p4PtRatio>0.2)"
+#DYRejection="((muon1Pt<30)&&(muon2Pt<30))"
+DYRejection="((muon2Pt/muon1Pt)>0.2)"
+FullS=BasicSelection+"&&"+TTbarRejection+"&&"+LowPTMuonRejection+"&&"+MuonCleansing+"&&"+METCut+"&&"+DYRejection
+#+"&&"+TTbarRejection+"&&"+LowPTMuonRejection+"&&"+MuonCleansing+"&&"+METCut
 
-VariablesForOptimization=["muon1Pt","muon2Pt","MT12"]
-OptBinning=["(125,0,250)","(100,0,200)","(500,0,1000)"]
+VariablesForOptimization=["MTmin","TwoMuonSystemPt"]
+OptBinning=["(100,0,200)","(250,0,500)"]
+#VariablesForOptimization=["muon1Pt","muon2Pt","MT12","muon1JetsMuon0p4PtRatio","muon2JetsMuon0p4PtRatio"]
+#OptBinning=["(125,0,250)","(100,0,200)","(500,0,1000)","(100,0,1)","(100,0,1)"]
+#VariablesForOptimization=["MT12","MT1","MT2","MTmin"]
+#OptBinning=["(500,0,1000)","(250,0,500)","(250,0,500)","(100,0,200)"]
+#VariablesForOptimization=["MET","jet1Pt"]
+#OptBinning=["(80,0,800)","(80,0,800)"]
 
 TIMEStr=time.strftime("%H_%M_%S")
 PDFNames="TwoMuonChannelOpt_"+TIMEStr
@@ -215,13 +237,38 @@ for i in xrange(len(VariablesForOptimization)):
     print "At value on the variable "+HistName+" =", SignalHisto.GetBinLowEdge(SoverSqrtSpB2.index(max(SoverSqrtSpB2)))
     print "---------------------------------------------------------"    
 
-    SoverSqrtSpB3, ZHisto3, EffSHisto3, EffBHisto3 = GreaterThan(SignalHisto,TTHisto,"TT_GT_"+HistName)
+    SoverSqrtSpB3, ZHisto3, EffSHisto3, EffBHisto3 = SmallerThan(SignalHisto,TTHisto,"TT_ST_"+HistName)
 
     print "-----------------Significance study 3---------------------"
     print "Significance before optimization =", SignalHisto.Integral()/np.sqrt(SignalHisto.Integral()+FullBkg.Integral())
     print "Maximum significance reached is =", max(SoverSqrtSpB3)
     print "At value on the variable "+HistName+" =", SignalHisto.GetBinLowEdge(SoverSqrtSpB3.index(max(SoverSqrtSpB3)))
     print "---------------------------------------------------------"    
+
+    SoverSqrtSpB4, ZHisto4, EffSHisto4, EffBHisto4 = GreaterThan(SignalHisto,TTHisto,"TT_GT_"+HistName)
+
+    print "-----------------Significance study 4---------------------"
+    print "Significance before optimization =", SignalHisto.Integral()/np.sqrt(SignalHisto.Integral()+FullBkg.Integral())
+    print "Maximum significance reached is =", max(SoverSqrtSpB4)
+    print "At value on the variable "+HistName+" =", SignalHisto.GetBinLowEdge(SoverSqrtSpB4.index(max(SoverSqrtSpB4)))
+    print "---------------------------------------------------------"
+
+    SoverSqrtSpB5, ZHisto5, EffSHisto5, EffBHisto5 = SmallerThan(SignalHisto,FullBkg,"Fullbkg_ST_"+HistName)
+
+    print "-----------------Significance study 5---------------------"
+    print "Significance before optimization =", SignalHisto.Integral()/np.sqrt(SignalHisto.Integral()+FullBkg.Integral())
+    print "Maximum significance reached is =", max(SoverSqrtSpB5)
+    print "At value on the variable "+HistName+" =", SignalHisto.GetBinLowEdge(SoverSqrtSpB5.index(max(SoverSqrtSpB5)))
+    print "---------------------------------------------------------"    
+
+    SoverSqrtSpB6, ZHisto6, EffSHisto6, EffBHisto6 = GreaterThan(SignalHisto,FullBkg,"Fullbkg_GT_"+HistName)
+
+    print "-----------------Significance study 6---------------------"
+    print "Significance before optimization =", SignalHisto.Integral()/np.sqrt(SignalHisto.Integral()+FullBkg.Integral())
+    print "Maximum significance reached is =", max(SoverSqrtSpB6)
+    print "At value on the variable "+HistName+" =", SignalHisto.GetBinLowEdge(SoverSqrtSpB6.index(max(SoverSqrtSpB6)))
+    print "---------------------------------------------------------"
+
 
 
     SignalHisto.Write()
@@ -247,6 +294,15 @@ for i in xrange(len(VariablesForOptimization)):
     EffSHisto3.Write()
     EffBHisto3.Write()
     ZHisto3.Write()
+    EffSHisto4.Write()
+    EffBHisto4.Write()
+    ZHisto4.Write()
+    EffSHisto5.Write()
+    EffBHisto5.Write()
+    ZHisto5.Write()
+    EffSHisto6.Write()
+    EffBHisto6.Write()
+    ZHisto6.Write()
 
 HistFile.Close()
 

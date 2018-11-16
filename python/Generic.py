@@ -39,8 +39,14 @@ def SmallerThan(SignalHisto,BkgHisto,Marker):
             Z=0.0
         else:
             Z=float(S)/np.sqrt(S+B)
-        EffB=float(B)/BkgHisto.Integral()
-        EffS=float(S)/SignalHisto.Integral()
+        if BkgHisto.Integral()==0:
+            EffB=1.
+        else:
+            EffB=float(B)/BkgHisto.Integral()
+        if SignalHisto.Integral()==0:
+            EffS=1.
+        else:
+            EffS=float(S)/SignalHisto.Integral()
         if i%10==0: print "Bin", i, "on bkg at", BkgHisto.GetBinLowEdge(i), "S", S, "B", B, "Z", Z, "Eff_S", EffS, "Eff_B", EffB
         ZHisto.SetBinContent(i,Z)
         ZHisto.SetBinError(i,0.0)
@@ -71,8 +77,14 @@ def GreaterThan(SignalHisto,BkgHisto,Marker):
             Z=0.0
         else:
             Z=float(S)/np.sqrt(S+B)
-        EffB=float(B)/BkgHisto.Integral()
-        EffS=float(S)/SignalHisto.Integral()
+        if BkgHisto.Integral()==0:
+            EffB=1.
+        else:
+            EffB=float(B)/BkgHisto.Integral()
+        if SignalHisto.Integral()==0:
+            EffS=1.
+        else:
+            EffS=float(S)/SignalHisto.Integral()
         if i%10==0: print "Bin", i, "on bkg at", BkgHisto.GetBinLowEdge(i), "S", S, "B", B, "Z", Z, "Eff_S", EffS, "Eff_B", EffB
         ZHisto.SetBinContent(i,Z)
         ZHisto.SetBinError(i,0.0)
