@@ -34,6 +34,15 @@ private:
 	Double_t muon2Phi=0;
 	Double_t muon1Charge=0;
 	Double_t muon2Charge=0;
+	Double_t Gmuon1Pt=0;
+	Double_t Gmuon2Pt=0;
+	Double_t Gmuon1Eta=0;
+	Double_t Gmuon2Eta=0;
+	Double_t Gmuon1Phi=0;
+	Double_t Gmuon2Phi=0;
+	//Double_t Gmuon1Charge=0;
+	//Double_t Gmuon2Charge=0;
+	bool GMathcedMuons=false;
 	Int_t isMuon1DuplicatedOnJets=0;
 	Int_t isMuon2DuplicatedOnJets=0;
 	Int_t NTightIso0p2Muons=0;
