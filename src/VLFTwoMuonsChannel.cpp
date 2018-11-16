@@ -77,7 +77,7 @@ void VLFTwoMuonsChannel::analyze(size_t childid /* this info can be used for pri
 	d_ana::dBranchHandler<Jet>         jet(tree(),"JetPUPPI");
 	d_ana::dBranchHandler<Muon>        muontight(tree(),"MuonTight");
 	d_ana::dBranchHandler<Muon>        muonloose(tree(),"MuonLoose");
-	d_ana::dBranchHandler<Photon>      photon(tree(),"Photon");
+	//d_ana::dBranchHandler<Photon>      photon(tree(),"Photon");
 	d_ana::dBranchHandler<MissingET>   met(tree(),"PuppiMissingET");
 
 
@@ -126,6 +126,15 @@ void VLFTwoMuonsChannel::analyze(size_t childid /* this info can be used for pri
 	myskim->Branch("muon2Phi", &muon2Phi);
 	myskim->Branch("muon1Charge", &muon1Charge);
 	myskim->Branch("muon2Charge", &muon2Charge);
+	myskim->Branch("Gmuon1Pt", &Gmuon1Pt);
+	myskim->Branch("Gmuon2Pt", &Gmuon2Pt);
+	myskim->Branch("Gmuon1Eta", &Gmuon1Eta);
+	myskim->Branch("Gmuon2Eta", &Gmuon2Eta);
+	myskim->Branch("Gmuon1Phi", &Gmuon1Phi);
+	myskim->Branch("Gmuon2Phi", &Gmuon2Phi);
+	//myskim->Branch("Gmuon1Charge", &Gmuon1Charge);
+	//myskim->Branch("Gmuon2Charge", &Gmuon2Charge);
+	myskim->Branch("MuonsMatchedToGen", &GMathcedMuons);
 	myskim->Branch("muon1JetsMuon0p4PtRatio", &muon1JetsMuon0p4PtRatio);
 	myskim->Branch("muon2JetsMuon0p4PtRatio", &muon2JetsMuon0p4PtRatio);
  	myskim->Branch("minDeltaRJetsmuon1", &minDeltaRJetsmuon1);
@@ -204,6 +213,7 @@ void VLFTwoMuonsChannel::analyze(size_t childid /* this info can be used for pri
 
 
 	size_t nevents=tree()->entries();
+	std::cout << " Nevents = " << nevents << std::endl;
 	if(isTestMode())
 		nevents/=100;
 	for(size_t eventno=0;eventno<nevents;eventno++){
@@ -226,20 +236,37 @@ void VLFTwoMuonsChannel::analyze(size_t childid /* this info can be used for pri
 		/*
 		 * Or to fill the skim
 		 */
-		//if (met.at(0)->MET<100) continue;
-		//if (jet.at(0)->PT < 100) continue;
+		if (met.at(0)->MET<50) continue;
+		if (jet.at(0)->PT < 50) continue;
 		//if (muontight.size()<2 || muontight.size()>2) continue;
-		if (muontight.size()<2) continue;
+		//if (muontight.size()<2) continue; //OLD CONFIG
+		if (muontight.size()>2 || muontight.size()<1) continue;
+		//////std::cout << muontight.size() << std::endl;
+		//if (muontight.size()!=2) continue;
+		//if (muontight.size()!=1) continue;
 		//if ((muontight.at(0)->Charge*muontight.at(1)->Charge)>0) continue;
+		//////std::cout << "Debugging...1" << std::endl;
+		if (muontight.at(0)->PT<3) continue; //Basic cuts
 		NTightMuons=muontight.size();
 		muon1Pt=muontight.at(0)->PT;
-		muon2Pt=muontight.at(1)->PT;
 		muon1Eta=muontight.at(0)->Eta;
-		muon2Eta=muontight.at(1)->Eta;
 		muon1Phi=muontight.at(0)->Phi;
-		muon2Phi=muontight.at(1)->Phi;
 		muon1Charge=muontight.at(0)->Charge;
-		muon2Charge=muontight.at(1)->Charge;
+		if (muontight.size()==2) {
+		  if (muontight.at(1)->PT<3) continue;  //Basic cuts
+		  muon2Pt=muontight.at(1)->PT;
+		  muon2Eta=muontight.at(1)->Eta;
+		  muon2Phi=muontight.at(1)->Phi;
+		  muon2Charge=muontight.at(1)->Charge;
+		  if (muon1Charge*muon2Charge>0) continue;  //Basic cuts
+		}
+		else {
+		  muon2Pt=10000;
+		  muon2Eta=5.5;
+		  muon2Phi=3.14;
+		  muon2Charge=3;
+		}
+		//////std::cout << "Debugging...2" << std::endl;
 
 		TLorentzVector Muon1;
 		TLorentzVector Muon2;
@@ -248,6 +275,43 @@ void VLFTwoMuonsChannel::analyze(size_t childid /* this info can be used for pri
 		//Muon1.SetPx(muon1Pt*TMath::Cos(muon1Phi)); Muon1.SetPy(muon1Pt*TMath::Sin(muon1Phi)); Muon1.SetPz(muon1Pt*TMath::SinH(muon1Phi)); Muon1.SetT(muontight.at(0)->T);
 		//Muon2.SetPx(muon2Pt*TMath::Cos(muon2Phi)); Muon2.SetPy(muon2Pt*TMath::Sin(muon2Phi)); Muon2.SetPz(muon2Pt*TMath::SinH(muon2Phi)); Muon2.SetT(muontight.at(1)->T);
 		TLorentzVector TwoMuonSystem=Muon1+Muon2;
+		if (TwoMuonSystem.M()<12) continue; //Basic cuts
+		if (TwoMuonSystem.M()>60 && TwoMuonSystem.M()<120) continue; //Basic cuts
+
+		//GEN MATCHING
+		TLorentzVector GMuon1,GMuon2;
+		int CountingGMuons=0;
+		bool FlagFirstMatched=false;
+		bool FlagSecondMatched=false;
+		double PTMatch=5;
+		double ETAMatch=0.4;
+		for (size_t i=0;i<genpart.size();i++){
+		  if (genpart.at(i)->PID==13 || genpart.at(i)->PID==-13){
+		    if (CountingGMuons==0) {
+		      GMuon1.SetPtEtaPhiM(genpart.at(i)->PT,genpart.at(i)->Eta,genpart.at(i)->Phi,mass_mu);
+		    }
+		    else if (CountingGMuons==1) {
+		      GMuon2.SetPtEtaPhiM(genpart.at(i)->PT,genpart.at(i)->Eta,genpart.at(i)->Phi,mass_mu);
+		    }
+		    CountingGMuons++;
+		    if ((abs(genpart.at(i)->PT-muon1Pt)<PTMatch) && (abs(genpart.at(i)->Eta-muon1Eta)<ETAMatch)){
+		      FlagFirstMatched=true;
+		    }
+		    else if ((abs(genpart.at(i)->PT-muon2Pt)<PTMatch) && (abs(genpart.at(i)->Eta-muon2Eta)<ETAMatch)){
+		      FlagSecondMatched=true;
+		    }
+		  }		    
+		}
+		
+		if (GMuon1.Pt()>=GMuon2.Pt()){
+		  Gmuon1Pt=GMuon1.Pt(); Gmuon1Eta=GMuon1.Eta(); Gmuon1Phi=GMuon1.Phi();
+		  Gmuon2Pt=GMuon2.Pt(); Gmuon2Eta=GMuon2.Eta(); Gmuon2Phi=GMuon2.Phi();
+		}
+		else {
+		  Gmuon1Pt=GMuon2.Pt(); Gmuon1Eta=GMuon2.Eta(); Gmuon1Phi=GMuon2.Phi();
+		  Gmuon2Pt=GMuon1.Pt(); Gmuon2Eta=GMuon1.Eta(); Gmuon2Phi=GMuon1.Phi();
+		}
+		if (FlagFirstMatched && FlagSecondMatched) GMathcedMuons=true;
 
 		//Studying muon isolation from jets
 		double minDeltaRmuon1=20;
@@ -258,6 +322,7 @@ void VLFTwoMuonsChannel::analyze(size_t childid /* this info can be used for pri
 		isMuon2DuplicatedOnJets=0;
 		bool JetIsMuon=false;
 		skimmedjets.clear();
+		//////std::cout << "Debugging...3" << std::endl;
 		for (size_t i=0;i<jet.size();i++){
 		  TLorentzVector JET;
 		  JET.SetPtEtaPhiM(jet.at(i)->PT,jet.at(i)->Eta,jet.at(i)->Phi,jet.at(i)->Mass);
@@ -299,10 +364,12 @@ void VLFTwoMuonsChannel::analyze(size_t childid /* this info can be used for pri
 		muon1JetsMuon0p4PtRatio=muon1Pt/JetMuon1PtSum;
 		muon2JetsMuon0p4PtRatio=muon2Pt/JetMuon2PtSum;
 
+		//////std::cout << "Debugging...4" << std::endl;
+
 		//Size of cleaed jet collection
 		//std::cout << "New jet collection size=" << skimmedjets.size() << ", from total jet collection size=" << jet.size() << std::endl;
 
-		//if (TwoMuonSystem.M()>60 and TwoMuonSystem.M()<120) continue;
+		//if (TwoMuonSystem.M()>60 and TwoMuonSystem.M()<120) continue;  //Basic cuts
 		TwoMuonSystemMass=TwoMuonSystem.M();
 		TwoMuonSystemPt=TwoMuonSystem.Pt();
 		TwoMuonSystemEta=TwoMuonSystem.Eta();
@@ -383,6 +450,7 @@ void VLFTwoMuonsChannel::analyze(size_t childid /* this info can be used for pri
 		NTightIso0p4Muons=Iso0p4Muons;
 		NTight0p4PtIsoMuons=Iso0p4PtMuons;
 
+		//////std::cout << "Debugging...5" << std::endl;
 		//if (Iso0p2Muons<2 || Iso0p2Muons>2) continue;
 
 		TLorentzVector Iso0p2Muon1;
@@ -405,33 +473,39 @@ void VLFTwoMuonsChannel::analyze(size_t childid /* this info can be used for pri
 		TwoIso0p4MuonSystemEta=TwoIso0p4MuonSystem.Eta();
 		TwoIso0p4MuonSystemPhi=TwoIso0p4MuonSystem.Phi();
 
-		int iMax=0;
-		int iSubMax=1;
-		//double Max=PtSumPerMuon.at(0); double SubMax=PtSumPerMuon.at(0);
-		double Max=0.0; double SubMax=0.0;
-
-		for (size_t i=0;i<PtSumPerMuon.size();i++){
-		  if (PtSumPerMuon.at(i) > Max) {
-		    Max=PtSumPerMuon.at(i);
-		    iMax=i;
+		if (muontight.size()==2){
+		  int iMax=0;
+		  int iSubMax=1;
+		  //double Max=PtSumPerMuon.at(0); double SubMax=PtSumPerMuon.at(0);
+		  double Max=0.0; double SubMax=0.0;
+		  
+		  for (size_t i=0;i<PtSumPerMuon.size();i++){
+		    if (PtSumPerMuon.at(i) > Max) {
+		      Max=PtSumPerMuon.at(i);
+		      iMax=i;
+		    }
+		    if (PtSumPerMuon.at(i) > SubMax && PtSumPerMuon.at(i) < Max) {
+		      SubMax=PtSumPerMuon.at(i);
+		      iSubMax=i;
+		    }
 		  }
-		  if (PtSumPerMuon.at(i) > SubMax && PtSumPerMuon.at(i) < Max) {
-		    SubMax=PtSumPerMuon.at(i);
-		    iSubMax=i;
-		  }
-		}
 		
-		/*if (muontight.size()==3) {
-		  std::cout << "Sizes:" << std::endl;
-		  std::cout << PtSumPerMuon.size() << " " << muontight.size()<< std::endl;
-		  std::cout << "iMax, Max, iSubMax, SubMax " << std::endl;
-		  std::cout << iMax << " " << Max << " " << iSubMax << " " << SubMax << std::endl;
-		  std::cout << "Max->ptsum, Submax->ptsum " << std::endl;
-		  std::cout << PtSumPerMuon.at(iMax) << " " << PtSumPerMuon.at(iSubMax) << std::endl;
-		  }*/
+		  /*if (muontight.size()==3) {
+		    std::cout << "Sizes:" << std::endl;
+		    std::cout << PtSumPerMuon.size() << " " << muontight.size()<< std::endl;
+		    std::cout << "iMax, Max, iSubMax, SubMax " << std::endl;
+		    std::cout << iMax << " " << Max << " " << iSubMax << " " << SubMax << std::endl;
+		    std::cout << "Max->ptsum, Submax->ptsum " << std::endl;
+		    std::cout << PtSumPerMuon.at(iMax) << " " << PtSumPerMuon.at(iSubMax) << std::endl;
+		    }*/
 
-		mostIsomuon1Pt=muontight.at(iMax)->PT; mostIsomuon1Eta=muontight.at(iMax)->Eta; mostIsomuon1Phi=muontight.at(iMax)->Phi; mostIsomuon1Charge=muontight.at(iMax)->Charge;
-		mostIsomuon2Pt=muontight.at(iSubMax)->PT; mostIsomuon2Eta=muontight.at(iSubMax)->Eta; mostIsomuon2Phi=muontight.at(iSubMax)->Phi; mostIsomuon2Charge=muontight.at(iSubMax)->Charge;
+		  mostIsomuon1Pt=muontight.at(iMax)->PT; mostIsomuon1Eta=muontight.at(iMax)->Eta; mostIsomuon1Phi=muontight.at(iMax)->Phi; mostIsomuon1Charge=muontight.at(iMax)->Charge;
+		  mostIsomuon2Pt=muontight.at(iSubMax)->PT; mostIsomuon2Eta=muontight.at(iSubMax)->Eta; mostIsomuon2Phi=muontight.at(iSubMax)->Phi; mostIsomuon2Charge=muontight.at(iSubMax)->Charge;
+		}
+		else{
+		  mostIsomuon1Pt=muontight.at(0)->PT; mostIsomuon1Eta=muontight.at(0)->Eta; mostIsomuon1Phi=muontight.at(0)->Phi; mostIsomuon1Charge=muontight.at(0)->Charge;
+                  mostIsomuon2Pt=10000; mostIsomuon2Eta=5.5; mostIsomuon2Phi=3.14; mostIsomuon2Charge=3;
+		}
 		TLorentzVector mostIsoMuon1;
 		TLorentzVector mostIsoMuon2;
 		mostIsoMuon1.SetPtEtaPhiM(mostIsomuon1Pt,mostIsomuon1Eta,mostIsomuon1Phi,mass_mu);
@@ -442,6 +516,7 @@ void VLFTwoMuonsChannel::analyze(size_t childid /* this info can be used for pri
 		mostIsoTwoMuonSystemEta=mostIsoTwoMuonSystem.Eta();
 		mostIsoTwoMuonSystemPhi=mostIsoTwoMuonSystem.Phi();
 
+		//////std::cout << "Debugging...6" << std::endl;
 		///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 		MET=met.at(0)->MET;
@@ -464,7 +539,8 @@ void VLFTwoMuonsChannel::analyze(size_t childid /* this info can be used for pri
 		  if (skimmedjets.at(i).PT < 30) continue; 
 		  //skimmedjets.push_back(*jet.at(i));
 		  GoodJetCounter++;
-		  if (skimmedjets.at(i).BTag) {
+		  int idx_WP = 1;
+		  if (skimmedjets.at(i).BTag & (1 << idx_WP)) {
 		    bJetCounter++;
 		  }
 		  if (CurrentCounter==0){
@@ -483,6 +559,8 @@ void VLFTwoMuonsChannel::analyze(size_t childid /* this info can be used for pri
 
 		NbJets=bJetCounter;
 		if (NbJets!=0) continue;
+
+		//if (jet1Pt<60) continue; //Basic cuts
 
 		NJets=GoodJetCounter;
 		if (NJets<1) continue;
